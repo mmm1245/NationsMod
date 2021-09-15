@@ -4,7 +4,11 @@
   "package": "com.github.mmm1245.fabric.nations.mixin",
   "compatibilityLevel": "JAVA_16",
   "mixins": [
-	"ChunkMixin"
+	"ChunkMixin",
+    "ChunkSerializationMixin",
+    "ProtoChunkMixin",
+    "WorldChunkMixin",
+    "ReadOnlyChunkMixin"
   ],
   "client": [
     

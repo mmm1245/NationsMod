@@ -13,19 +13,28 @@ public class NationsMain implements ModInitializer {
 	public void onInitialize() {
 		CommandRegistrationCallback.EVENT.register((dispatcher, dedicated) -> {
 			dispatcher.register(CommandManager.literal("nclaim").executes(context -> {
-				ServerPlayerEntity pl = context.getSource().getPlayer();
-				Chunk chunk = pl.getServerWorld().getChunk(pl.getChunkPos().getStartPos());
-				((IOwnedChunk) chunk).setOwner(pl.getUuid());
+				try {
+					ServerPlayerEntity pl = context.getSource().getPlayer();
+					Chunk chunk = pl.getServerWorld().getChunk(pl.getChunkPos().getStartPos());
+					((IOwnedChunk) chunk).setOwner(pl.getUuid());
+					chunk.setShouldSave(true);
+				} catch(Exception e){
+					e.printStackTrace();
+				}
 				return 1;
 			}));
 			dispatcher.register(CommandManager.literal("nowner").executes(context -> {
-				ServerPlayerEntity pl = context.getSource().getPlayer();
-				Chunk chunk = pl.getServerWorld().getChunk(pl.getChunkPos().getStartPos());
-				IOwnedChunk owned = ((IOwnedChunk) chunk);
-				if(owned.isOwned()){
-					pl.sendMessage(new LiteralText("Chunk is claimed by " + owned.owner().toString()),false);
-				} else {
-					pl.sendMessage(new LiteralText("Chunk is not claimed").styled(style -> style.withColor(Formatting.DARK_RED)),false);
+				try{
+					ServerPlayerEntity pl = context.getSource().getPlayer();
+					Chunk chunk = pl.getServerWorld().getChunk(pl.getChunkPos().getStartPos());
+					IOwnedChunk owned = ((IOwnedChunk) chunk);
+					if(owned.isOwned()){
+						pl.sendMessage(new LiteralText("Chunk is claimed by " + owned.owner().toString()),false);
+					} else {
+						pl.sendMessage(new LiteralText("Chunk is not claimed").styled(style -> style.withColor(Formatting.DARK_RED)),false);
+					}
+				} catch(Exception e){
+					e.printStackTrace();
 				}
 				return 1;
 			}));

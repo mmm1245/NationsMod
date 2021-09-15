@@ -19,10 +19,19 @@ public class ChunkSerializationMixin {
     private static String chunkOwnerKey = "ChunkOwner";
     @Inject(at = @At("RETURN"),method = "serialize",cancellable = true)
     private static void serialize(ServerWorld world, Chunk chunk, CallbackInfoReturnable<NbtCompound> cir){
-        cir.getReturnValue().putUuid(chunkOwnerKey,((IOwnedChunk)chunk).owner());
+        if(((IOwnedChunk)chunk).isOwned()) {
+            cir.getReturnValue().putUuid(chunkOwnerKey, ((IOwnedChunk) chunk).owner());
+        }
+
     }
     @Inject(at = @At("RETURN"),method = "deserialize",cancellable = true)
     private static void deserialize(ServerWorld world, StructureManager structureManager, PointOfInterestStorage poiStorage, ChunkPos pos, NbtCompound nbt, CallbackInfoReturnable<ProtoChunk> cir){
-        ((IOwnedChunk)cir.getReturnValue()).setOwner(nbt.getUuid(chunkOwnerKey));
+        if(nbt.contains(chunkOwnerKey)) {
+            Chunk chunk = cir.getReturnValue();
+            ((IOwnedChunk) chunk).setOwner(nbt.getUuid(chunkOwnerKey));
+            cir.setReturnValue((ProtoChunk) chunk);
+        }
+        else
+            ((IOwnedChunk)cir.getReturnValue()).setOwner(null);
     }
 }
